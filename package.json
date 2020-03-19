@@ -4,6 +4,9 @@
   "main": "index.js",
   "author": "enbacode <nick.baas94@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
     "bootstrap": "^4.4.1",
     "bootstrap-vue": "^2.7.0",

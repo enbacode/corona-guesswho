@@ -25,11 +25,11 @@
               <p>Du spielst als <strong>{{username}}</strong></p>
          </b-col>
       </b-row>
-      <b-row v-for="user in users" :key="user.username" class="mt-2">
-          <b-col md="6" lg="3">
+      <b-row>
+          <b-col md="6" lg="3" v-for="user in sortedUsers" :key="user.username" class="mt-2">
             <b-card :title="user.username">
                 <b-form-group>
-                <b-form-input inline v-model="user.alias" @change="changeAlias(user)"></b-form-input>
+                <b-form-input inline label="alias" v-model="user.alias" @change="changeAlias(user)"></b-form-input>
                 </b-form-group>
                 <b-button variant="primary" @change="changeAlias(user)">Ändern</b-button>
             </b-card>
@@ -46,6 +46,12 @@ export default {
             loggedIn: false,
             username: '', 
             users: []
+        }
+    },
+
+    computed: {
+        sortedUsers() {
+            return this.users.sort((a,b) => (a.username > b.username) ? 1 : ((b.username > a.username) ? -1 : 0)); 
         }
     },
 

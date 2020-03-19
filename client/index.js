@@ -11,7 +11,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 Vue.use(new VueSocketIO({
     debug: true,
-    connection: 'localhost:3000'
+    connection: 'https://corona-guesswho.herokuapp.com/'
 }))
 
 const app = new Vue({

@@ -54907,7 +54907,7 @@ _vue.default.use(_bootstrapVue.IconsPlugin);
 
 _vue.default.use(new _vueSocket.default({
   debug: true,
-  connection: 'localhost:3000'
+  connection: 'https://corona-guesswho.herokuapp.com/'
 }));
 
 var app = new _vue.default({

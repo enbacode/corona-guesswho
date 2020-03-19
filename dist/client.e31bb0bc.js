@@ -54780,65 +54780,63 @@ exports.default = _default;
             1
           ),
           _vm._v(" "),
-          _vm._l(_vm.users, function(user) {
-            return _c(
-              "b-row",
-              { key: user.username, staticClass: "mt-2" },
-              [
-                _c(
-                  "b-col",
-                  { attrs: { md: "6", lg: "3" } },
-                  [
-                    _c(
-                      "b-card",
-                      { attrs: { title: user.username } },
-                      [
-                        _c(
-                          "b-form-group",
-                          [
-                            _c("b-form-input", {
-                              attrs: { inline: "" },
-                              on: {
-                                change: function($event) {
-                                  return _vm.changeAlias(user)
-                                }
-                              },
-                              model: {
-                                value: user.alias,
-                                callback: function($$v) {
-                                  _vm.$set(user, "alias", $$v)
-                                },
-                                expression: "user.alias"
-                              }
-                            })
-                          ],
-                          1
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "b-button",
-                          {
-                            attrs: { variant: "primary" },
+          _c(
+            "b-row",
+            { staticClass: "mt-2" },
+            _vm._l(_vm.users.sort(), function(user) {
+              return _c(
+                "b-col",
+                { key: user.username, attrs: { md: "6", lg: "3" } },
+                [
+                  _c(
+                    "b-card",
+                    { attrs: { title: user.username } },
+                    [
+                      _c(
+                        "b-form-group",
+                        [
+                          _c("b-form-input", {
+                            attrs: { inline: "" },
                             on: {
                               change: function($event) {
                                 return _vm.changeAlias(user)
                               }
+                            },
+                            model: {
+                              value: user.alias,
+                              callback: function($$v) {
+                                _vm.$set(user, "alias", $$v)
+                              },
+                              expression: "user.alias"
                             }
-                          },
-                          [_vm._v("Ändern")]
-                        )
-                      ],
-                      1
-                    )
-                  ],
-                  1
-                )
-              ],
-              1
-            )
-          })
+                          })
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "b-button",
+                        {
+                          attrs: { variant: "primary" },
+                          on: {
+                            change: function($event) {
+                              return _vm.changeAlias(user)
+                            }
+                          }
+                        },
+                        [_vm._v("Ändern")]
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            }),
+            1
+          )
         ],
-        2
+        1
       )
 }
 var staticRenderFns = []

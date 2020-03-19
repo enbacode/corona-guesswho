@@ -25,8 +25,8 @@
               <p>Du spielst als <strong>{{username}}</strong></p>
          </b-col>
       </b-row>
-      <b-row class="mt-2">
-          <b-col v-for="user in users.sort()" :key="user.username" md="6" lg="3">
+      <b-row v-for="user in users" :key="user.username" class="mt-2">
+          <b-col md="6" lg="3">
             <b-card :title="user.username">
                 <b-form-group>
                 <b-form-input inline v-model="user.alias" @change="changeAlias(user)"></b-form-input>

@@ -51,7 +51,7 @@ export default {
 
     computed: {
         sortedUsers() {
-            return this.users.sort((a,b) => (a.username > b.username) ? 1 : ((b.username > a.username) ? -1 : 0)); 
+            return this.users.sort((a,b) => (a.username > b.username) ? 1 : ((b.username > a.username) ? -1 : 0))
         }
     },
 

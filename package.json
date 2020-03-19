@@ -5,7 +5,8 @@
   "author": "enbacode <nick.baas94@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "build": "parcel ./client/index.html"
   },
   "dependencies": {
     "bootstrap": "^4.4.1",

@@ -54634,13 +54634,39 @@ exports.default = void 0;
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 var _default = {
   data: function data() {
     return {
       loggedIn: false,
       username: '',
-      users: []
+      users: [],
+      hints: [],
+      newHint: ''
     };
+  },
+  computed: {
+    sortedUsers: function sortedUsers() {
+      return this.users.sort(function (a, b) {
+        return a.username > b.username ? 1 : b.username > a.username ? -1 : 0;
+      });
+    }
   },
   methods: {
     login: function login() {
@@ -54649,6 +54675,10 @@ var _default = {
     },
     changeAlias: function changeAlias(user) {
       this.$socket.emit('changeAlias', user);
+    },
+    addHint: function addHint() {
+      this.hints.push(this.newHint);
+      this.newHint = '';
     }
   },
   sockets: {
@@ -54780,65 +54810,160 @@ exports.default = _default;
             1
           ),
           _vm._v(" "),
-          _vm._l(_vm.users, function(user) {
-            return _c(
-              "b-row",
-              { key: user.username, staticClass: "mt-2" },
-              [
-                _c(
-                  "b-col",
-                  { attrs: { md: "6", lg: "3" } },
-                  [
-                    _c(
-                      "b-card",
-                      { attrs: { title: user.username } },
-                      [
-                        _c(
-                          "b-form-group",
-                          [
-                            _c("b-form-input", {
-                              attrs: { inline: "" },
-                              on: {
-                                change: function($event) {
-                                  return _vm.changeAlias(user)
-                                }
-                              },
-                              model: {
-                                value: user.alias,
-                                callback: function($$v) {
-                                  _vm.$set(user, "alias", $$v)
-                                },
-                                expression: "user.alias"
-                              }
-                            })
-                          ],
-                          1
-                        ),
-                        _vm._v(" "),
-                        _c(
-                          "b-button",
-                          {
-                            attrs: { variant: "primary" },
+          _c("h2", [_vm._v("Mitspieler")]),
+          _vm._v(" "),
+          _c(
+            "b-row",
+            _vm._l(_vm.sortedUsers, function(user) {
+              return _c(
+                "b-col",
+                {
+                  key: user.username,
+                  staticClass: "mt-2",
+                  attrs: { md: "6", lg: "3" }
+                },
+                [
+                  _c(
+                    "b-card",
+                    { attrs: { title: user.username } },
+                    [
+                      _c(
+                        "b-form-group",
+                        [
+                          _c("b-form-input", {
+                            attrs: { inline: "", label: "alias" },
                             on: {
                               change: function($event) {
                                 return _vm.changeAlias(user)
                               }
+                            },
+                            model: {
+                              value: user.alias,
+                              callback: function($$v) {
+                                _vm.$set(user, "alias", $$v)
+                              },
+                              expression: "user.alias"
                             }
+                          })
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "b-button",
+                        {
+                          attrs: { variant: "primary" },
+                          on: {
+                            change: function($event) {
+                              return _vm.changeAlias(user)
+                            }
+                          }
+                        },
+                        [_vm._v("Ändern")]
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            }),
+            1
+          ),
+          _vm._v(" "),
+          _c("h2", [_vm._v("Notizen")]),
+          _vm._v(" "),
+          _c(
+            "b-row",
+            { staticClass: "mb-3" },
+            _vm._l(_vm.hints, function(hint) {
+              return _c("b-card", { key: hint, staticClass: "mx-2 mb-2" }, [
+                _vm._v(_vm._s(hint))
+              ])
+            }),
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "b-row",
+            [
+              _c(
+                "b-col",
+                { attrs: { cols: "12" } },
+                [
+                  _c(
+                    "b-form-group",
+                    [
+                      _c("b-form-input", {
+                        attrs: { placeholder: "Neue Notiz" },
+                        on: {
+                          keydown: function($event) {
+                            if (
+                              !$event.type.indexOf("key") &&
+                              _vm._k(
+                                $event.keyCode,
+                                "enter",
+                                13,
+                                $event.key,
+                                "Enter"
+                              )
+                            ) {
+                              return null
+                            }
+                            return _vm.addHint()
+                          }
+                        },
+                        model: {
+                          value: _vm.newHint,
+                          callback: function($$v) {
+                            _vm.newHint = $$v
                           },
-                          [_vm._v("Ändern")]
-                        )
-                      ],
-                      1
-                    )
-                  ],
-                  1
-                )
-              ],
-              1
-            )
-          })
+                          expression: "newHint"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "b-form-group",
+                    [
+                      _c(
+                        "b-button",
+                        {
+                          attrs: { variant: "primary" },
+                          on: {
+                            click: function($event) {
+                              return _vm.addHint()
+                            }
+                          }
+                        },
+                        [_vm._v("Hinzufügen")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "b-button",
+                        {
+                          attrs: { variant: "danger" },
+                          on: {
+                            click: function($event) {
+                              _vm.hints = []
+                            }
+                          }
+                        },
+                        [_vm._v("Alle löschen")]
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          )
         ],
-        2
+        1
       )
 }
 var staticRenderFns = []
@@ -54948,7 +55073,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55659" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62846" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

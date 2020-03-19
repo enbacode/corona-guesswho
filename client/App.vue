@@ -25,6 +25,7 @@
               <p>Du spielst als <strong>{{username}}</strong></p>
          </b-col>
       </b-row>
+      <h2>Mitspieler</h2>
       <b-row>
           <b-col md="6" lg="3" v-for="user in sortedUsers" :key="user.username" class="mt-2">
             <b-card :title="user.username">
@@ -33,6 +34,22 @@
                 </b-form-group>
                 <b-button variant="primary" @change="changeAlias(user)">Ändern</b-button>
             </b-card>
+          </b-col>
+      </b-row>
+      <h2>Notizen</h2>
+      <b-row class="mb-3">
+          <b-card v-for="hint in hints" :key="hint" class="mx-2 mb-2">{{hint}}</b-card>
+          
+      </b-row>
+      <b-row>
+          <b-col cols="12">
+              <b-form-group>
+                <b-form-input v-model="newHint" placeholder="Neue Notiz" @keydown.enter="addHint()"></b-form-input>
+              </b-form-group>
+            <b-form-group>
+                <b-button @click="addHint()" variant="primary">Hinzufügen</b-button>
+                <b-button @click="hints = []" variant="danger">Alle löschen</b-button>
+            </b-form-group>
           </b-col>
       </b-row>
   </b-container>
@@ -45,7 +62,9 @@ export default {
         return {
             loggedIn: false,
             username: '', 
-            users: []
+            users: [],
+            hints: [],
+            newHint: ''
         }
     },
 
@@ -63,6 +82,11 @@ export default {
 
         changeAlias(user) {
             this.$socket.emit('changeAlias', user)
+        },
+
+        addHint() {
+            this.hints.push(this.newHint)
+            this.newHint = ''
         }
     },
 

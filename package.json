@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node index.js",
-    "build": "parcel ./client/index.html"
+    "build": "parcel build ./client/index.html"
   },
   "dependencies": {
     "bootstrap": "^4.4.1",

@@ -54657,9 +54657,10 @@ var _default = {
     },
     userJoined: function userJoined(user) {
       if (user.username == this.username) return;
-      if (!this.users.find(function (item) {
-        return item.username == user.username;
-      })) this.users.push(user);
+      this.users = this.users.filter(function (item) {
+        return item.username != alias.username;
+      });
+      this.users.push(user);
     },
     userLeft: function userLeft(user) {
       this.users = this.users.filter(function (item) {
@@ -54669,10 +54670,10 @@ var _default = {
     aliasChange: function aliasChange(user) {
       console.log('received new alias', user.username, user.alias);
       if (user.username == this.username) return;
-      var aliasUser = this.users.find(function (item) {
-        return item.username = user.username;
+      this.users = this.users.filter(function (item) {
+        return item.username != alias.username;
       });
-      if (aliasUser) aliasUser.alias = user.alias;
+      this.users.push(user);
     }
   },
   created: function created() {

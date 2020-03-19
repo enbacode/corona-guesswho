@@ -54658,7 +54658,7 @@ var _default = {
     userJoined: function userJoined(user) {
       if (user.username == this.username) return;
       this.users = this.users.filter(function (item) {
-        return item.username != alias.username;
+        return item.username != user.username;
       });
       this.users.push(user);
     },
@@ -54671,7 +54671,7 @@ var _default = {
       console.log('received new alias', user.username, user.alias);
       if (user.username == this.username) return;
       this.users = this.users.filter(function (item) {
-        return item.username != alias.username;
+        return item.username != user.username;
       });
       this.users.push(user);
     }

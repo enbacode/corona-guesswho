@@ -3,6 +3,8 @@ import VueSocketIO from 'vue-socket.io'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import App from './App.vue'
 
+require('dotenv').config()
+
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 
@@ -11,7 +13,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 Vue.use(new VueSocketIO({
     debug: true,
-    connection: 'https://corona-guesswho.herokuapp.com/'
+    connection: process.env.CONNECTION
 }))
 
 const app = new Vue({

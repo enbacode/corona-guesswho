@@ -17,20 +17,22 @@ io.on('connection', socket => {
 
     console.log('new connection')
 
-    socket.on('addUser', username => {
+    socket.on('addUser', ({ username, lobby }) => {
 
         console.log('adding user', username)
         
         if(userAdded) return
         socket.username = username
         socket.alias = username
+        socket.lobby = lobby
         userAdded = true
         socket.emit('login')
-        sockets.forEach(user => {
+        socket.join(socket.lobby)
+        sockets.filter(item => item.lobby == socket.lobby).forEach(user => {
             socket.emit('userJoined', {username: user.username, alias: user.alias})
         })
         sockets.push(socket)
-        socket.broadcast.emit('userJoined', {
+        socket.to(lobby).emit('userJoined', {
             username: username,
             alias: username
         })
@@ -38,7 +40,7 @@ io.on('connection', socket => {
 
     socket.on('changeAlias', user => {
         console.log('alias change received', user.username, user.alias)
-        const aliasUser = sockets.find(item => item.username == user.username)
+        const aliasUser = sockets.find(item => item.username == user.username && item.lobby == socket.lobby)
 
         if(aliasUser) {
             aliasUser.alias = user.alias
@@ -53,7 +55,7 @@ io.on('connection', socket => {
     socket.on('disconnect', () => {
         console.log('user disconnected')
         if(userAdded) {
-            socket.broadcast.emit('userLeft', {
+            socket.to(socket.lobby).emit('userLeft', {
                 username: socket.username
             })
             sockets = sockets.filter(item => item.username != socket.username)

@@ -1,23 +1,25 @@
 <template>
   <b-container v-if="!loggedIn">
       <b-row>
-          <b-col cols="12" class="mt-3">
+          <b-col offset-md="3" class="mt-3">
               <h1>🦠 - Wer bin ich?</h1>
          </b-col>
       </b-row>
       <b-row class="mt-3">
-          <b-col cols="12">
-          <b-form>
-              <b-form-group label="Benutzername">
-                <b-form-input v-model="username" placeholder="Benutzername"></b-form-input>
-              </b-form-group>
-              <b-form-group label="Raum">
-                <b-form-input v-model="lobbyName" placeholder="Raum"></b-form-input>
-              </b-form-group>
-              <b-form-group>
-                <b-button block variant="primary" class="mt-1" @click="login()">Beitreten</b-button>
-              </b-form-group>
-          </b-form>
+          <b-col md="6" offset-md="3">
+              <b-card>
+                <b-form>
+                    <b-form-group label="Benutzername">
+                        <b-form-input v-model="username" placeholder="Benutzername"></b-form-input>
+                    </b-form-group>
+                    <b-form-group label="Raum">
+                        <b-form-input v-model="lobbyName" placeholder="Raum"></b-form-input>
+                    </b-form-group>
+                    <b-form-group>
+                        <b-button block variant="primary" class="mt-1" @click="login()">Beitreten</b-button>
+                    </b-form-group>
+                </b-form>
+              </b-card>
           </b-col>
       </b-row>
   </b-container>
@@ -38,11 +40,13 @@
       </b-row>
       <b-row v-else>
           <b-col md="6" lg="3" v-for="user in sortedUsers" :key="user.username" class="mt-2">
-            <b-card :title="user.username" :sub-title="user.alias">
-                <b-form-group>
-                <b-form-input inline label="alias" v-model="user.alias" @change="changeAlias(user)"></b-form-input>
-                </b-form-group>
-                <b-button variant="primary" @change="changeAlias(user)">Ändern</b-button>
+            <b-card :title="user.username">
+                <b-input-group>
+                    <b-form-input inline label="alias" v-model="user.alias" @change="changeAlias(user)"></b-form-input>
+                    <b-input-group-append>
+                        <b-button variant="primary" @change="changeAlias(user)">Ändern</b-button>
+                    </b-input-group-append>
+                </b-input-group>
             </b-card>
           </b-col>
       </b-row>

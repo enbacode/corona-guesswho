@@ -42,7 +42,7 @@
       <b-row v-else>
           <b-col md="6" lg="3" v-for="user in sortedUsers" :key="user.username" class="mt-2">
             <b-card :title="user.username" :sub-title="user.alias">
-                <b-input-group v-if="!user.edit">
+                <b-input-group v-if="user.edit">
                     <b-form-input inline label="alias" v-model="user.alias" @keydown.enter="changeAlias(user)"></b-form-input>
                     <b-input-group-append>
                         <b-button variant="primary" @click="changeAlias(user)">Speichern</b-button>
@@ -118,6 +118,7 @@ export default {
         },
 
         changeAlias(user) {
+            user.edit = false
             this.$socket.emit('changeAlias', user)
         },
 

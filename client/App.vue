@@ -1,4 +1,5 @@
 <template>
+<div>
   <b-container v-if="!loggedIn">
       <b-row>
           <b-col offset-md="3" class="mt-3">
@@ -66,6 +67,14 @@
           </b-col>
       </b-row>
   </b-container>
+  <b-container class="mt-5">
+      <b-row>
+          <b-col cols="12" class="text-center">
+              <b-link to="https://github.com/enbacode/corona-guesswho">Fork mich</b-link>
+          </b-col>
+      </b-row>
+  </b-container>
+  </div>
 </template>
 
 <script>

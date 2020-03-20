@@ -41,7 +41,7 @@
       </b-row>
       <b-row v-else>
           <b-col md="6" lg="3" v-for="user in sortedUsers" :key="user.username" class="mt-2">
-            <b-card :title="user.username">
+            <b-card :title="user.username" :sub-title="user.alias">
                 <b-input-group>
                     <b-form-input inline label="alias" v-model="user.alias" @keydown.enter="changeAlias(user)"></b-form-input>
                     <b-input-group-append>

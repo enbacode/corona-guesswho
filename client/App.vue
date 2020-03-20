@@ -10,10 +10,10 @@
           <b-col md="6" offset-md="3">
               <b-card>
                 <b-form>
-                    <b-form-group label="Benutzername">
-                        <b-form-input v-model="username" placeholder="Benutzername"></b-form-input>
+                    <b-form-group label="Benutzername" description="Der Benutzername, der deinen Mitspielern angezeigt wird">
+                        <b-form-input v-model="username" placeholder="Benutzername" @keydown.enter="login()"></b-form-input>
                     </b-form-group>
-                    <b-form-group label="Raum">
+                    <b-form-group label="Raum" description="Der Raum, in dem sich deine Mitspieler befinden bzw. dem sie beitreten müssen">
                         <b-form-input v-model="lobbyName" placeholder="Raum"></b-form-input>
                     </b-form-group>
                     <b-form-group>
@@ -43,7 +43,7 @@
           <b-col md="6" lg="3" v-for="user in sortedUsers" :key="user.username" class="mt-2">
             <b-card :title="user.username">
                 <b-input-group>
-                    <b-form-input inline label="alias" v-model="user.alias" @change="changeAlias(user)"></b-form-input>
+                    <b-form-input inline label="alias" v-model="user.alias" @keydown.enter="changeAlias(user)"></b-form-input>
                     <b-input-group-append>
                         <b-button variant="primary" @change="changeAlias(user)">Ändern</b-button>
                     </b-input-group-append>
@@ -70,7 +70,13 @@
   <b-container class="mt-5">
       <b-row>
           <b-col cols="12" class="text-center">
-              <b-link to="https://github.com/enbacode/corona-guesswho">Fork mich</b-link>
+              <b-link to="https://github.com/enbacode/corona-guesswho">Fork mich</b-link> |
+              <b-link v-if="!showDonationLinks" @click="showDonationLinks = true">Spendier mir'n Bier</b-link>
+              <span class="donate" v-else>
+                  Spendier mir'n Bier via
+                  <b-link to="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=HJYDDRLYEM7P6&source=url">Paypal</b-link> oder
+                  <b-link to="bitcoin:1JtHUpgiBaXtsZfXRewND6PQ9TPebY287B">Bitcoin</b-link>
+              </span>
           </b-col>
       </b-row>
   </b-container>
@@ -88,7 +94,8 @@ export default {
             users: [],
             hints: [],
             newHint: '',
-            lobbyName: ''
+            lobbyName: '',
+            showDonationLinks: false
         }
     },
 

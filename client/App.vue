@@ -134,7 +134,6 @@ export default {
 
         userJoined(user) {
             if(user.username == this.username) return
-            this.users = this.users.filter(item => item.username != user.username)
             this.users.push(user)
         },
 
@@ -145,8 +144,9 @@ export default {
         aliasChange(user) {
             console.log('received new alias', user.username, user.alias)
             if(user.username == this.username) return
-            this.users = this.users.filter(item => item.username != user.username)
-            this.users.push(user)
+            let userToChange = this.users.find(item => item.username == user.username)
+            if(!userToChange) return
+            userToChange.alias = user.alias
         }
     },
 

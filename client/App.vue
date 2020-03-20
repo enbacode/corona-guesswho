@@ -45,7 +45,7 @@
                 <b-input-group>
                     <b-form-input inline label="alias" v-model="user.alias" @keydown.enter="changeAlias(user)"></b-form-input>
                     <b-input-group-append>
-                        <b-button variant="primary" @change="changeAlias(user)">Ändern</b-button>
+                        <b-button variant="primary" @click="changeAlias(user)">Ändern</b-button>
                     </b-input-group-append>
                 </b-input-group>
             </b-card>

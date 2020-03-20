@@ -42,12 +42,15 @@
       <b-row v-else>
           <b-col md="6" lg="3" v-for="user in sortedUsers" :key="user.username" class="mt-2">
             <b-card :title="user.username" :sub-title="user.alias">
-                <b-input-group>
+                <b-input-group v-if="!user.edit">
                     <b-form-input inline label="alias" v-model="user.alias" @keydown.enter="changeAlias(user)"></b-form-input>
                     <b-input-group-append>
-                        <b-button variant="primary" @click="changeAlias(user)">Ändern</b-button>
+                        <b-button variant="primary" @click="changeAlias(user)">Speichern</b-button>
                     </b-input-group-append>
                 </b-input-group>
+                <b-form-input-group v-else>
+                    <b-button variant="primary" @click="user.edit = true">Ändern</b-button>
+                </b-form-input-group>
             </b-card>
           </b-col>
       </b-row>
@@ -134,6 +137,7 @@ export default {
 
         userJoined(user) {
             if(user.username == this.username) return
+            user.edit = false
             this.users.push(user)
         },
 

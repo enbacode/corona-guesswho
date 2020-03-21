@@ -11,10 +11,10 @@
               <b-card>
                 <b-form>
                     <b-form-group label="Benutzername" description="Der Benutzername, der deinen Mitspielern angezeigt wird">
-                        <b-form-input v-model="username" placeholder="Benutzername" @keydown.enter="login()"></b-form-input>
+                        <b-form-input v-model="self.username" placeholder="Benutzername" @keydown.enter="login()"></b-form-input>
                     </b-form-group>
                     <b-form-group label="Raum" description="Der Raum, in dem sich deine Mitspieler befinden bzw. dem sie beitreten müssen">
-                        <b-form-input v-model="lobbyName" placeholder="Raum"></b-form-input>
+                        <b-form-input v-model="self.lobby" placeholder="Raum"></b-form-input>
                     </b-form-group>
                     <b-form-group>
                         <b-button block variant="primary" class="mt-1" @click="login()">Beitreten</b-button>
@@ -32,7 +32,7 @@
       </b-row>
       <b-row>
           <b-col cols="12">
-              <p>Du spielst als <strong>{{username}}</strong> im Raum <strong>{{lobbyName}}</strong>. Zurzeit sind {{users.length +1}} Benutzer online.</p>
+              <p>Du spielst als <strong>{{self.username}}</strong> im Raum <strong>{{self.lobby}}</strong>. Zurzeit sind {{users.length +1}} Benutzer online.</p>
          </b-col>
       </b-row>
       <h2>Mitspieler</h2>
@@ -41,17 +41,7 @@
       </b-row>
       <b-row v-else>
           <b-col md="6" lg="3" v-for="user in sortedUsers" :key="user.username" class="mt-2">
-            <b-card :title="user.username" :sub-title="user.alias">
-                <b-input-group v-if="user.edit">
-                    <b-form-input inline label="alias" v-model="user.alias" @keydown.enter="changeAlias(user)"></b-form-input>
-                    <b-input-group-append>
-                        <b-button variant="primary" @click="changeAlias(user)">Speichern</b-button>
-                    </b-input-group-append>
-                </b-input-group>
-                <b-form-input-group v-else>
-                    <b-button variant="primary" @click="user.edit = true">Ändern</b-button>
-                </b-form-input-group>
-            </b-card>
+            <UserCard :user="user" :self="user == self" />
           </b-col>
       </b-row>
       <h2 class="mt-3">Notizen</h2>
@@ -88,38 +78,39 @@
 
 <script>
 import nouns from './nouns.json'
+import UserCard from './UserCard.vue'
 export default {
+
+    components: {
+        UserCard
+    },
 
     data() { 
         return {
             loggedIn: false,
-            username: '', 
+            self: {
+                username: '',
+                alias: '',
+                online: true,
+                lobby: ''
+            },
             users: [],
             hints: [],
             newHint: '',
-            lobbyName: '',
             showDonationLinks: false
         }
     },
 
     computed: {
         sortedUsers() {
-            return this.users.sort((a,b) => (a.username > b.username) ? 1 : ((b.username > a.username) ? -1 : 0))
+            return this.users.concat([this.self]).sort((a,b) => (a.username.toLowerCase() > b.username.toLowerCase()) ? 1 : ((b.username.toLowerCase() > a.username.toLowerCase()) ? -1 : 0))
         }
     },
 
     methods: {
         login() {
-            this.$socket.emit('addUser', {
-                username: this.username,
-                lobby: this.lobbyName
-            })
+            this.$socket.emit('addUser', this.self)
             this.loggedIn = true
-        },
-
-        changeAlias(user) {
-            user.edit = false
-            this.$socket.emit('changeAlias', user)
         },
 
         addHint() {
@@ -134,12 +125,30 @@ export default {
     sockets: {
         connect() {
             console.log('connected')
+            if(this.loggedIn) {
+                this.$socket.emit('rejoin', this.self)
+            }
         },
 
         userJoined(user) {
-            if(user.username == this.username) return
+            if(user.username == this.self.username) return
             user.edit = false
+            user.online = true
             this.users.push(user)
+        },
+
+        userLost(user) {
+            let lostUser = this.users.find(item => item.username == user.username)
+            if(lostUser) {
+                lostUser.online = false
+                lostUser.lastSeen = user.lastSeen
+            }
+        },
+
+        userRejoined(user) {
+            let rejoinedUser = this.users.find(item => item.username == user.username)
+            if(rejoinedUser)
+                rejoinedUser.online = true
         },
 
         userLeft(user) {
@@ -148,7 +157,7 @@ export default {
 
         aliasChange(user) {
             console.log('received new alias', user.username, user.alias)
-            if(user.username == this.username) return
+            if(user.username == this.self.username) return
             let userToChange = this.users.find(item => item.username == user.username)
             if(!userToChange) return
             userToChange.alias = user.alias
@@ -156,7 +165,7 @@ export default {
     },
 
     created() {
-        this.lobbyName = nouns[Math.floor(Math.random() * (nouns.length - 1))]
+        this.self.lobby = nouns[Math.floor(Math.random() * (nouns.length - 1))]
     }
 }
 </script>

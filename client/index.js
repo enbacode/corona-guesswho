@@ -20,4 +20,13 @@ const app = new Vue({
     el: '#app',
     components: { App: App },
     render: h => h(App),
+    mounted() {
+        const vm = this
+        window.addEventListener('keyup', event => {
+            if(event.keyCode == 39)
+                vm.$emit('next')
+            if(event.keyCode == 37)
+                vm.$emit('previous')
+        })
+    }
 })

@@ -11,6 +11,7 @@ app.use(express.static('dist'));
 const io = socketIO(server)
 
 let sockets = []
+let currentIndex = -1
 
 io.on('connection', socket => {
 
@@ -61,11 +62,36 @@ io.on('connection', socket => {
         if(aliasUser) {
             aliasUser.alias = user.alias
             console.log('new alias for', aliasUser.username, ': ', aliasUser.alias)
-            socket.broadcast.emit('aliasChange', {
+            socket.to(socket.lobby).emit('aliasChange', {
                 username: aliasUser.username,
                 alias: aliasUser.alias
             })
         }
+    })
+
+    socket.on('moveToNext', () => {
+        const room = sockets.filter(item => item.lobby == socket.lobby)
+        currentIndex = (currentIndex + 1) % room.length
+        console.log('moving to next ', room[currentIndex].username, socket.lobby)
+        socket.to(socket.lobby).emit('setCurrentUser', {
+            username: room[currentIndex].username
+        })
+        socket.emit('setCurrentUser', {
+            username: room[currentIndex].username
+        })
+    })
+    socket.on('moveToPrevious', () => {
+        const room = sockets.filter(item => item.lobby == socket.lobby)
+        currentIndex = (currentIndex - 1) % room.length
+        if(currentIndex < 0)
+            currentIndex = room.length - 1
+        console.log('moving to prev ', room[currentIndex].username)
+        socket.to(socket.lobby).emit('setCurrentUser', {
+            username: room[currentIndex].username
+        })
+        socket.emit('setCurrentUser', {
+            username: room[currentIndex].username
+        })
     })
 
     socket.on('disconnect', () => {
@@ -81,7 +107,7 @@ io.on('connection', socket => {
                     username: socket.username
                 })
                 sockets = sockets.filter(item => item.username != socket.username)
-            }, 1000 * 60 * 1)
+            }, 1000 * 60 * 30)
         }
     })
 })

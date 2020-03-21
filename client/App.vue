@@ -41,7 +41,7 @@
       </b-row>
       <b-row v-else>
           <b-col md="6" lg="3" v-for="user in sortedUsers" :key="user.username" class="mt-2">
-            <UserCard :user="user" :self="user == self" />
+            <UserCard :user="user" :self="user == self" :active="user == selectedUser" />
           </b-col>
       </b-row>
       <h2 class="mt-3">Notizen</h2>
@@ -97,7 +97,8 @@ export default {
             users: [],
             hints: [],
             newHint: '',
-            showDonationLinks: false
+            showDonationLinks: false,
+            selectedUser: {}
         }
     },
 
@@ -161,12 +162,25 @@ export default {
             let userToChange = this.users.find(item => item.username == user.username)
             if(!userToChange) return
             userToChange.alias = user.alias
+        },
+        
+        setCurrentUser(user) {
+            console.log('in')
+            this.selectedUser = this.sortedUsers.find(item => item.username == user.username)
         }
     },
 
     created() {
         this.self.lobby = nouns[Math.floor(Math.random() * (nouns.length - 1))]
-    }
+        this.$root.$on('next', () => {
+            if(this.loggedIn)
+                this.$socket.emit('moveToNext')
+        })
+        this.$root.$on('previous', () => {
+            if(this.loggedIn)
+                this.$socket.emit('moveToPrevious')
+        })
+    },
 }
 </script>
 

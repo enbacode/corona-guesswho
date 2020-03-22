@@ -1,14 +1,30 @@
 <template>
-<b-card :title="self ? 'Du' : user.username" :sub-title="self ? '???' : user.alias" :class="'user-card' + (user.online ? '' : ' text-muted') + (active ? ' user-card-active' : '')">
-    <b-input-group v-if="edit">
-        <b-form-input inline label="alias" v-model="user.alias" @keydown.enter="changeAlias()"></b-form-input>
-        <b-input-group-append>
-            <b-button variant="primary" @click="changeAlias()">Speichern</b-button>
-        </b-input-group-append>
-    </b-input-group>
-    <b-form-input-group v-else>
-        <b-button variant="primary" @click="edit = true" v-if="!self" :disabled="!user.online">Ändern</b-button> <span v-if="!user.online">{{ countdown }}</span>
-    </b-form-input-group>
+<b-card :class="'user-card' + (user.online ? '' : ' text-muted') + (active ? ' user-card-active' : '')">
+    <b-card-sub-title v-if="self">Du</b-card-sub-title>
+    <b-card-sub-title v-else>{{user.username}}</b-card-sub-title>
+
+    <b-card-title v-if="self">???</b-card-title>
+    <b-card-title v-else>
+        {{user.alias}} 
+    </b-card-title>
+
+    <div class="mt-2">
+        <b-input-group v-if="edit">
+            <b-form-input inline label="alias" v-model="newAlias" @keydown.enter="changeAlias()"></b-form-input>
+            <b-input-group-append>
+                <b-button variant="outline-secondary" @click="getRandomAlias()"><font-awesome-icon :icon="['fas', 'random']"></font-awesome-icon></b-button>
+                <b-button variant="outline-danger" @click="dismissAlias()"><font-awesome-icon :icon="['fas', 'times']"></font-awesome-icon></b-button>
+                <b-button variant="primary" @click="changeAlias()"><font-awesome-icon :icon="['fas', 'check']"></font-awesome-icon></b-button>
+            </b-input-group-append>
+        </b-input-group>
+        <b-input-group v-else>
+            <b-button-group v-if="!self">
+                <b-button variant="outline-primary" @click="edit = true" v-if="!self" :disabled="!user.online"><font-awesome-icon :icon="['fas', 'edit']"></font-awesome-icon></b-button>
+                <b-button variant="outline-primary" @click="openUrl(googleUrl)"><font-awesome-icon :icon="['fab', 'google']"></font-awesome-icon></b-button>
+            </b-button-group>
+             <span class="mt-2 ml-3" v-if="!user.online">{{ countdown }}</span>
+        </b-input-group>
+    </div>
 </b-card>
 </template>
 
@@ -21,19 +37,39 @@ export default {
     data() {
         return {
             edit: false,
-            countdown: ''
+            countdown: '',
+            newAlias: this.user.alias
         }
     },
 
     methods: {
         changeAlias() {
             this.edit = false
+            this.user.alias = this.newAlias
             this.$socket.emit('changeAlias', this.user)
         },
+        getRandomAlias() {
+            fetch('/alias')
+                .then(response => response.json())
+                .then(json => this.newAlias = json[0])
+        },
+        openUrl(url) {
+            window.open(url, '_blank')
+        },
+        dismissAlias() {
+            this.newAlias = this.user.alias
+            this.edit = false
+        }
     },
 
     created() {
         setInterval(() => { this.countdown = moment(this.user.lastSeen).add(30, 'minutes').subtract(moment.now()).format('mm:ss') }, 1000)
+    },
+
+    computed: {
+        googleUrl() {
+            return 'https://www.google.com/search?q=' + encodeURI(this.user.alias)
+        }
     }
 }
 </script>

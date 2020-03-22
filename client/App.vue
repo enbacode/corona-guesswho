@@ -9,12 +9,13 @@
       <b-row class="mt-3">
           <b-col md="6" offset-md="3">
               <b-card>
+                <p v-if="invited">Du wurdest zur Gruppe <strong>{{self.lobby}}</strong> eingeladen. Gib einen Benutzernamen ein und klicke auf "Beitreten", um mitzuspielen.</p>
                 <b-form>
                     <b-form-group label="Benutzername" description="Der Benutzername, der deinen Mitspielern angezeigt wird">
                         <b-form-input v-model="self.username" placeholder="Benutzername" @keydown.enter="login()"></b-form-input>
                     </b-form-group>
-                    <b-form-group label="Raum" description="Der Raum, in dem sich deine Mitspieler befinden bzw. dem sie beitreten müssen">
-                        <b-form-input v-model="self.lobby" placeholder="Raum"></b-form-input>
+                    <b-form-group v-if="!invited" label="Gruppenname" description="Der Name der Gruppe, in der ihr spielt">
+                        <b-form-input v-model="self.lobby" placeholder="Gruppe"></b-form-input>
                     </b-form-group>
                     <b-form-group>
                         <b-button block variant="primary" class="mt-1" @click="login()">Beitreten</b-button>
@@ -32,15 +33,31 @@
       </b-row>
       <b-row>
           <b-col cols="12">
-              <p>Du spielst als <strong>{{self.username}}</strong> im Raum <strong>{{self.lobby}}</strong>. Zurzeit sind {{users.length +1}} Benutzer online.</p>
+              <p>Du spielst als <strong>{{self.username}}</strong> in der Gruppe <strong>{{self.lobby}}</strong>. Zurzeit sind {{users.length +1}} Benutzer online.</p>
+              <p style="max-width: 400px">
+                  <b-input-group v-if="users.length != 0">
+                      <b-input-group-prepend>
+                          <b-button variant="outline-secondary" @click="copyInviteToClipboard"><font-awesome-icon :icon="['fas', 'clipboard']"></font-awesome-icon></b-button>
+                      </b-input-group-prepend>
+                      <b-input inline type="text" readonly v-model="inviteUrl" class="inviteUrl"></b-input>
+                  </b-input-group>
+              </p>
          </b-col>
       </b-row>
       <h2>Mitspieler</h2>
       <b-row v-if="users.length == 0">
-          <b-col cols="12">Es sind noch keine anderen benutzer online</b-col>
+          <b-col cols="12" class="my-3">
+              <p class="h5">Es sind noch keine anderen Benutzer online. Lade deine Freunde über den Invite-Link ein:</p>
+              <b-input-group size="lg" style="max-width:500px">
+                      <b-input-group-prepend>
+                          <b-button variant="outline-secondary" @click="copyInviteToClipboard"><font-awesome-icon :icon="['fas', 'clipboard']"></font-awesome-icon></b-button>
+                      </b-input-group-prepend>
+                      <b-input inline type="text" readonly v-model="inviteUrl" @focus="select"  class="inviteUrl"></b-input>
+              </b-input-group>
+          </b-col>
       </b-row>
       <b-row v-else>
-          <b-col md="6" lg="3" v-for="user in sortedUsers" :key="user.username" class="mt-2">
+          <b-col md="6" lg="4" v-for="user in sortedUsers" :key="user.username" class="mt-2">
             <UserCard :user="user" :self="user == self" :active="user == selectedUser" />
           </b-col>
       </b-row>
@@ -54,8 +71,8 @@
                 <b-form-input v-model="newHint" placeholder="Neue Notiz" @keydown.enter="addHint()"></b-form-input>
               </b-form-group>
             <b-form-group>
-                <b-button @click="addHint()" variant="primary">Hinzufügen</b-button>
-                <b-button @click="hints = []" variant="danger">Alle löschen</b-button>
+                <b-button @click="addHint()" variant="primary"><font-awesome-icon :icon="['fas', 'plus']"></font-awesome-icon> Hinzufügen</b-button>
+                <b-button @click="hints = []" variant="danger"><font-awesome-icon :icon="['fas', 'trash']"></font-awesome-icon> Alle löschen</b-button>
             </b-form-group>
           </b-col>
       </b-row>
@@ -98,13 +115,17 @@ export default {
             hints: [],
             newHint: '',
             showDonationLinks: false,
-            selectedUser: {}
+            selectedUser: {},
+            invited: false
         }
     },
 
     computed: {
         sortedUsers() {
             return this.users.concat([this.self]).sort((a,b) => (a.username.toLowerCase() > b.username.toLowerCase()) ? 1 : ((b.username.toLowerCase() > a.username.toLowerCase()) ? -1 : 0))
+        },
+        inviteUrl() {
+            return window.location.origin + `/?i=${this.self.lobby}`
         }
     },
 
@@ -120,6 +141,23 @@ export default {
         },
         removeHint(hint) {
             this.hints = this.hints.filter(item => item != hint)
+        },
+        select(event) {
+            event.target.focus();
+            event.target.select();
+        },
+        copyInviteToClipboard(event) {
+            
+            const textInput = document.querySelector('.inviteUrl')
+            textInput.focus();
+            textInput.select();
+
+            try {
+                const successful = document.execCommand('copy');
+            } catch (err) {
+                console.error('Unable to copy', err);
+            }
+
         }
     },
 
@@ -171,7 +209,16 @@ export default {
     },
 
     created() {
-        this.self.lobby = nouns[Math.floor(Math.random() * (nouns.length - 1))]
+        const invite = new URL(location.href).searchParams.get('i')
+
+        if(invite) {
+            this.invited = true
+            this.self.lobby = invite
+        }
+        else {
+            this.self.lobby = nouns[Math.floor(Math.random() * (nouns.length - 1))]
+        }
+
         this.$root.$on('next', () => {
             if(this.loggedIn)
                 this.$socket.emit('moveToNext')

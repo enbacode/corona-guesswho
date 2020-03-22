@@ -2,11 +2,19 @@ import Vue from 'vue'
 import VueSocketIO from 'vue-socket.io'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import App from './App.vue'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faCheck, faRandom, faEdit, faPlus, faTrash, faClipboard, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faGoogle } from '@fortawesome/free-brands-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 require('dotenv').config()
 
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
+
+library.add(faCheck, faRandom, faEdit, faPlus, faTrash, faClipboard, faTimes)
+library.add(faGoogle)
+Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'

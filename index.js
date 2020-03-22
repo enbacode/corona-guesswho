@@ -1,6 +1,7 @@
 const  socketIO = require('socket.io')
 const  express = require('express')
 const http = require('http')
+const fs = require('fs')
 require('dotenv').config()
 
 const app = express()
@@ -13,6 +14,16 @@ const io = socketIO(server)
 let sockets = []
 let currentIndex = -1
 
+const aliases = JSON.parse(fs.readFileSync('./aliases.json'))
+
+function getRandomAlias() {
+    return aliases[Math.floor(Math.random() * aliases.length)]
+}
+
+app.get('/alias', (request, response) => {
+    response.send(JSON.stringify([getRandomAlias()]))
+})
+
 io.on('connection', socket => {
 
     console.log('new connection')
@@ -22,7 +33,7 @@ io.on('connection', socket => {
 
         if(userAdded) return
         socket.username = username
-        socket.alias = username
+        socket.alias = getRandomAlias()
         socket.lobby = lobby
         userAdded = true
         socket.emit('login')
@@ -33,8 +44,8 @@ io.on('connection', socket => {
         })
         sockets.push(socket)
         socket.to(lobby).emit('userJoined', {
-            username: username,
-            alias: username
+            username: socket.username,
+            alias: socket.alias
         })
     })
 

@@ -168,7 +168,7 @@ export default {
 
     sockets: {
         connect() {
-            console.log('connected')
+            this.$ga.page('/game');
             if(this.loggedIn) {
                 this.$socket.emit('rejoin', this.self)
                 this.$ga.event('game', 'rejoin', this.self.username, 1)
@@ -216,7 +216,7 @@ export default {
 
     created() {
         const invite = new URL(location.href).searchParams.get('i')
-
+        this.$ga.page(location.pathname + location.search);
         if(invite) {
             this.invited = true
             this.self.lobby = invite

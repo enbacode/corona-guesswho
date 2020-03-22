@@ -6,11 +6,15 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { faCheck, faRandom, faEdit, faPlus, faTrash, faClipboard, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { faGoogle } from '@fortawesome/free-brands-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import VueAnalytics from 'vue-analytics';
 
 require('dotenv').config()
 
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
+Vue.use(VueAnalytics, {
+    id: 'UA-161480730-1'
+});
 
 library.add(faCheck, faRandom, faEdit, faPlus, faTrash, faClipboard, faTimes)
 library.add(faGoogle)

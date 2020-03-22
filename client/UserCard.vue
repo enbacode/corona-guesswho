@@ -47,11 +47,14 @@ export default {
             this.edit = false
             this.user.alias = this.newAlias
             this.$socket.emit('changeAlias', this.user)
+            this.$ga.event('game', 'change alias', `${this.user.username}:${this.user.lobby}:${this.user.alias}`, 1)
+
         },
         getRandomAlias() {
             fetch('/alias')
                 .then(response => response.json())
                 .then(json => this.newAlias = json[0])
+                this.$ga.event('game', 'random alias', `${this.user.username}:${this.user.lobby}:${this.user.newAlias}`, 1)
         },
         openUrl(url) {
             window.open(url, '_blank')
@@ -59,6 +62,7 @@ export default {
         dismissAlias() {
             this.newAlias = this.user.alias
             this.edit = false
+            this.$ga.event('game', 'dismiss alias', `${this.user.username}:${this.user.lobby}:${this.user.alias}`, 1)
         }
     },
 

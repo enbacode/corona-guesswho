@@ -21,6 +21,7 @@
     "parcel": "^1.12.4",
     "socket.io": "^2.3.0",
     "vue": "^2.6.11",
+    "vue-analytics": "^5.22.1",
     "vue-hot-reload-api": "^2.3.4",
     "vue-socket.io": "^3.0.7"
   },

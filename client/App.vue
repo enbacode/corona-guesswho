@@ -133,14 +133,19 @@ export default {
         login() {
             this.$socket.emit('addUser', this.self)
             this.loggedIn = true
+
+            this.$ga.event('login', (this.invited ? 'login with invite' : 'manual login'), `${self.username}:${self.group}`, 1)
         },
 
         addHint() {
             this.hints.push(this.newHint)
+            this.$ga.event('hint', 'add hint', this.newHint, 1)
             this.newHint = ''
         },
         removeHint(hint) {
             this.hints = this.hints.filter(item => item != hint)
+            this.$ga.event('hint', 'remove hint', this.hint, 1)
+            
         },
         select(event) {
             event.target.focus();
@@ -157,7 +162,7 @@ export default {
             } catch (err) {
                 console.error('Unable to copy', err);
             }
-
+            this.$ga.event('invite', 'copy to clipboard', this.inviteUrl, 1)
         }
     },
 
@@ -166,6 +171,7 @@ export default {
             console.log('connected')
             if(this.loggedIn) {
                 this.$socket.emit('rejoin', this.self)
+                this.$ga.event('game', 'rejoin', this.self.username, 1)
             }
         },
 
@@ -222,10 +228,14 @@ export default {
         this.$root.$on('next', () => {
             if(this.loggedIn)
                 this.$socket.emit('moveToNext')
+                this.$ga.event('game', 'next', this.self.lobby, 1)
+
         })
         this.$root.$on('previous', () => {
             if(this.loggedIn)
                 this.$socket.emit('moveToPrevious')
+                this.$ga.event('game', 'previous', this.self.lobby, 1)
+
         })
     },
 }

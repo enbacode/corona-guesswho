@@ -1,5 +1,5 @@
 <template>
-<b-card :class="'user-card' + (user.online ? '' : ' text-muted') + (active ? ' user-card-active' : '')">
+<b-card :img-src="imgUrl" img-height="200px" :class="'user-card' + (user.online ? '' : ' text-muted') + (active ? ' user-card-active' : '')">
     <b-card-sub-title v-if="self">Du</b-card-sub-title>
     <b-card-sub-title v-else>{{user.username}}</b-card-sub-title>
 
@@ -30,6 +30,7 @@
 
 <script>
 import moment from 'moment'
+import unknownAvatar from './avatar-questionmark.png'
 export default {
 
     props: ['user', 'self', 'active'],
@@ -38,7 +39,8 @@ export default {
         return {
             edit: false,
             countdown: '',
-            newAlias: this.user.alias
+            newAlias: this.user.alias,
+            imgUrl: unknownAvatar,
         }
     },
 
@@ -46,9 +48,9 @@ export default {
         changeAlias() {
             this.edit = false
             this.user.alias = this.newAlias
+            this.setImageUrl()
             this.$socket.emit('changeAlias', this.user)
             this.$ga.event('game', 'change alias', `${this.user.username}:${this.user.lobby}:${this.user.alias}`, 1)
-
         },
         getRandomAlias() {
             fetch('/alias')
@@ -63,11 +65,40 @@ export default {
             this.newAlias = this.user.alias
             this.edit = false
             this.$ga.event('game', 'dismiss alias', `${this.user.username}:${this.user.lobby}:${this.user.alias}`, 1)
+        },
+        setImageUrl() {
+            if(this.self) {
+                return
+            }
+            fetch(`/image?q=${encodeURI(this.user.alias)}`)
+            .then(res => {
+                if(!res.ok)
+                    throw Error()
+                return res
+            })
+            .then(res => res.json())
+            .then(json => json[0])
+            .then(imageUrl => this.imgUrl = imageUrl)
+            .catch(() => {
+                this.imgUrl = unknownAvatar
+            })
         }
     },
 
     created() {
         setInterval(() => { this.countdown = moment(this.user.lastSeen).add(30, 'minutes').subtract(moment.now()).format('mm:ss') }, 1000)
+        this.setImageUrl()
+    },
+
+    sockets: {
+        aliasChange(user) {
+            if(this.self)
+                return
+            if(user.username != this.user.username)
+                return
+            this.user.alias = user.alias
+            this.setImageUrl()
+        },
     },
 
     computed: {
@@ -81,6 +112,9 @@ export default {
 <style>
 .user-card {
     min-height: 140px;
+}
+.user-card .card-img {
+    object-fit: cover;
 }
 .user-card-active {
     box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);

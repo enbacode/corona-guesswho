@@ -163,7 +163,7 @@ export default {
                 console.error('Unable to copy', err);
             }
             this.$ga.event('invite', 'copy to clipboard', this.inviteUrl, 1)
-        }
+        },
     },
 
     sockets: {
@@ -199,17 +199,8 @@ export default {
         userLeft(user) {
             this.users = this.users.filter(item => item.username != user.username)
         },
-
-        aliasChange(user) {
-            console.log('received new alias', user.username, user.alias)
-            if(user.username == this.self.username) return
-            let userToChange = this.users.find(item => item.username == user.username)
-            if(!userToChange) return
-            userToChange.alias = user.alias
-        },
         
         setCurrentUser(user) {
-            console.log('in')
             this.selectedUser = this.sortedUsers.find(item => item.username == user.username)
         }
     },

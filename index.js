@@ -2,6 +2,7 @@ const  socketIO = require('socket.io')
 const  express = require('express')
 const http = require('http')
 const fs = require('fs')
+const fetch = require('node-fetch')
 require('dotenv').config()
 
 const app = express()
@@ -16,12 +17,37 @@ let currentIndex = -1
 
 const aliases = JSON.parse(fs.readFileSync('./aliases.json'))
 
+const cachedImageUrls = []
+
 function getRandomAlias() {
     return aliases[Math.floor(Math.random() * aliases.length)]
 }
 
 app.get('/alias', (request, response) => {
     response.send(JSON.stringify([getRandomAlias()]))
+})
+
+app.get('/image', (request, response) => {
+    const q = request.param('q')
+    const cache = cachedImageUrls.find(item => item.query == q)
+    if(cache) {
+        response.send(JSON.stringify([cache.image]))
+    }
+    else {
+        fetch(`https://www.googleapis.com/customsearch/v1?key=AIzaSyBY7rmwpqw4CvR1rbLbnyxFPvlHM-o04-o&q=${encodeURI(q)}&cx=004773877283740196199:kstva1a2x93&searchType=image&num=1`)
+        .then(res => res.json())
+        .then(json => {
+            cachedImageUrls.push({
+                query: q,
+                image: json.items[0].link
+            })
+            response.send(JSON.stringify([json.items[0].link]))
+
+        })
+        .catch(err => {
+            response.status(503).send(JSON.stringify(['error']))
+        })
+    }
 })
 
 io.on('connection', socket => {

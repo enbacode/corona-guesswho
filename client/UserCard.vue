@@ -111,7 +111,7 @@ export default {
 
 <style>
 .user-card {
-    min-height: 140px;
+    min-height: 335px;
 }
 .user-card .card-img {
     object-fit: cover;
